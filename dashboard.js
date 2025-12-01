@@ -228,8 +228,8 @@ function renderChart(labels, data) {
         
         // Create gradient
         const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-        gradient.addColorStop(0, '#667eea');
-        gradient.addColorStop(1, '#764ba2');
+        gradient.addColorStop(0, '#001B48');
+        gradient.addColorStop(1, '#02457A');
         
         // Draw bar with rounded top
         ctx.fillStyle = gradient;
