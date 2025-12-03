@@ -76,6 +76,8 @@ function showPage(pageName) {
         loadCustomersForManagement();
     } else if (pageName === 'riwayat') {
         loadSalesHistory();
+    } else if (pageName === 'laporan') {
+        loadReportData();
     }
 }
 

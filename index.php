@@ -29,6 +29,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <li><a href="#" class="nav-link" data-page="stok">Stok Barang</a></li>
                 <li><a href="#" class="nav-link" data-page="pelanggan">Pelanggan</a></li>
                 <li><a href="#" class="nav-link" data-page="riwayat">Riwayat</a></li>
+                <li><a href="#" class="nav-link" data-page="laporan">Laporan</a></li>
             </ul>
             <div class="navbar-user">
                 <span><i class="bi bi-person-fill"></i> <?php echo htmlspecialchars($_SESSION['username']); ?></span>
@@ -172,7 +173,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                     <!-- Products Section -->
                     <div class="products-section">
                         <div class="search-bar">
-                            <input type="text" id="searchProduct" placeholder=" Cari produk...">
+                            <input type="text" id="searchProduct" placeholder="🔍 Cari produk...">
                         </div>
                         <div class="products-grid" id="productsGrid">
                             <!-- Products akan dimuat di sini -->
@@ -327,7 +328,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                         <div class="table-header">
                             <h3>Daftar Pelanggan</h3>
                             <div class="table-controls">
-                                <input type="text" id="searchCustomerTable" placeholder=" Cari pelanggan...">
+                                <input type="text" id="searchCustomerTable" placeholder="🔍 Cari pelanggan...">
                             </div>
                         </div>
                         <table class="data-table">
@@ -387,6 +388,135 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             </div>
         </div>
 
+        <!-- ==========================================
+             HALAMAN LAPORAN
+             ========================================== -->
+        <div id="laporanPage" class="page">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h2>Laporan Transaksi</h2>
+                    <p>Cetak dan export laporan penjualan</p>
+                </div>
+                
+                <div style="padding: 30px;">
+                    <!-- Filter Section -->
+                    <div class="report-filter-section">
+                        <h3><i class="bi bi-funnel"></i> Filter Laporan</h3>
+                        
+                        <div class="filter-controls">
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label>Jenis Filter:</label>
+                                    <select id="filterType" onchange="toggleFilterInputs()">
+                                        <option value="all">Semua Data</option>
+                                        <option value="today">Hari Ini</option>
+                                        <option value="range">Rentang Tanggal</option>
+                                        <option value="month">Per Bulan</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group" id="dateRangeFilter" style="display: none;">
+                                    <label>Dari Tanggal:</label>
+                                    <input type="date" id="filterStartDate">
+                                    <label>Sampai Tanggal:</label>
+                                    <input type="date" id="filterEndDate">
+                                </div>
+                                
+                                <div class="filter-group" id="monthFilter" style="display: none;">
+                                    <label>Pilih Bulan:</label>
+                                    <input type="month" id="filterMonth">
+                                </div>
+                            </div>
+                            
+                            <div class="filter-actions">
+                                <button class="btn btn-primary" onclick="applyFilters()">
+                                    <i class="bi bi-search"></i> Terapkan Filter
+                                </button>
+                                <button class="btn btn-warning" onclick="resetFilters()">
+                                    <i class="bi bi-arrow-clockwise"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="report-summary">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-receipt"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-label">Total Transaksi</div>
+                                <div class="summary-value" id="reportTotalTransaksi">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-cash-stack"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-label">Total Pendapatan</div>
+                                <div class="summary-value" id="reportTotalPendapatan">Rp 0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-label">Total Bayar</div>
+                                <div class="summary-value" id="reportTotalBayar">Rp 0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="bi bi-arrow-return-left"></i>
+                            </div>
+                            <div class="summary-content">
+                                <div class="summary-label">Total Kembalian</div>
+                                <div class="summary-value" id="reportTotalKembalian">Rp 0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Actions -->
+                    <div class="export-actions">
+                        <button class="btn btn-danger" onclick="exportToPDF()">
+                            <i class="bi bi-file-pdf"></i> Export ke PDF
+                        </button>
+                        <button class="btn btn-success" onclick="exportToExcel()">
+                            <i class="bi bi-file-excel"></i> Export ke Excel
+                        </button>
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Detail Transaksi</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No. Nota</th>
+                                    <th>Tanggal & Waktu</th>
+                                    <th>Pelanggan</th>
+                                    <th>Total</th>
+                                    <th>Bayar</th>
+                                    <th>Kembalian</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Receipt Print Template (Hidden) -->
@@ -400,5 +530,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <script src="customer-manager.js"></script>
     <script src="dashboard.js"></script>
     <script src="receipt.js"></script>
+    <script src="report.js"></script>
 </body>
 </html>
